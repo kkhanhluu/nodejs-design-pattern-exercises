@@ -1,0 +1,23 @@
+{
+  "name": "nodejs-pattern",
+  "version": "1.0.0",
+  "description": "nodejs design pattern exercises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkhanhluu/nodejs-design-pattern-exercises.git"
+  },
+  "author": "Khanh Luu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kkhanhluu/nodejs-design-pattern-exercises/issues"
+  },
+  "homepage": "https://github.com/kkhanhluu/nodejs-design-pattern-exercises#readme",
+  "dependencies": {
+    "asciichart": "^1.5.25",
+    "csv-parse": "^5.0.4"
+  }
+}
