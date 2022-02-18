@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/kkhanhluu/nodejs-design-pattern-exercises#readme",
   "dependencies": {
+    "ansi-styles": "^6.1.0",
     "asciichart": "^1.5.25",
+    "axios": "^0.25.0",
     "csv-parse": "^5.0.4"
   }
 }
