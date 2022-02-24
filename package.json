@@ -20,6 +20,8 @@
     "ansi-styles": "^6.1.0",
     "asciichart": "^1.5.25",
     "axios": "^0.25.0",
-    "csv-parse": "^5.0.4"
+    "csv-parse": "^5.0.4",
+    "serve-handler": "^6.1.3",
+    "socket.io": "^4.4.1"
   }
 }
