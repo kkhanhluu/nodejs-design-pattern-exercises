@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Helvetica, Arial, sans-serif;
+    }
+
+    #msgForm {
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.25rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      height: 3rem;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+    }
+    #msgBox {
+      border: none;
+      padding: 0 1rem;
+      flex-grow: 1;
+      border-radius: 2rem;
+      margin: 0.25rem;
+    }
+    #msgBox:focus {
+      outline: none;
+    }
+    #msgForm > button {
+      background: #333;
+      border: none;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 3px;
+      outline: none;
+      color: #fff;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    #messages li {
+      padding: 0.5rem 1rem;
+    }
+    #messages li.sender {
+      background: rgb(255, 126, 41);
+      color: white;
+    }
+    #messages li.leave {
+      background: #efefef;
+    }
+
+    .online {
+      color: green;
+    }
+
+    .offline {
+      color: peru;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <body>
+    <div>
+      Users:
+      <ul id="users"></ul>
+    </div>
+
+    <div>
+      Messages:
+      <ul id="messages"></ul>
+      <form id="msgForm">
+        <input type="text" placeholder="Send a message" id="msgBox" />
+        <input type="submit" value="Send" />
+      </form>
+    </div>
+  </body>
+
+  <script>
+    const socket = io();
+    const users = new Map();
+
+    const form = document.getElementById('msgForm');
+    const input = document.getElementById('msgBox');
+    const messages = document.getElementById('messages');
+    const userList = document.getElementById('users');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('chat message', input.value);
+        appendItemToMessages(null, 'You', input.value);
+        input.value = '';
+      }
+    });
+
+    // display message
+    socket.on('chat message', ({ message, sender }) => {
+      appendItemToMessages('sender', sender, message);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // leave room
+    socket.on('leave', ({ message, sender, userId }) => {
+      appendItemToMessages('leave', sender, message);
+      const item = document.getElementById(userId);
+      item.classList.remove('online');
+      item.classList.add('offline');
+      users.set(userId, { ...users.get(userId), online: false });
+    });
+
+    // join room
+    socket.on('online', ({ userId, name, online }) => {
+      if (!users.has(userId)) {
+        const item = document.createElement('li');
+        item.setAttribute('id', userId);
+        item.textContent = `${name}: ●`;
+        item.classList.add(online ? 'online' : 'offline');
+        userList.appendChild(item);
+      } else {
+        const item = document.getElementById(userId);
+        item.classList.remove('offline');
+        item.classList.add('online');
+      }
+      users.set(userId, { name, online });
+    });
+
+    // initialize
+    socket.on('initialize', (users) => {
+      users.forEach(({ userId, name, online }) => {
+        const item = document.createElement('li');
+        item.setAttribute('id', userId);
+        item.textContent = `${name}: ●`;
+        item.classList.add(online ? 'online' : 'offline');
+        userList.appendChild(item);
+      });
+    });
+
+    function appendItemToMessages(className, user, message) {
+      const item = document.createElement('li');
+      item.textContent = `${user}: ${message}`;
+      item.classList.add(className ?? 'normal');
+      messages.appendChild(item);
+    }
+  </script>
+</html>
